@@ -1,0 +1,31 @@
+#! /bin/bash
+
+USAGE='cgiserver [ -d | --dir ] [ -h | --help ]'
+
+while [ $# -gt 0 ]
+do
+	case "$1" in
+		-d|--dir)
+			shift
+			DOCUMENT_ROOT="$1"
+			;;
+		-h|--help)
+			echo "$USAGE"
+			exit 0
+			;;
+		*)
+			echo "Invalid option: $1"
+			echo "$USAGE"
+			exit 1
+			;;
+	esac
+	shift
+done
+
+read REQUEST_METHOD SCRIPT_NAME http_version
+read request_line
+while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
+do
+	read request_line
+done
+$DOCUMENT_ROOT$SCRIPT_NAME
