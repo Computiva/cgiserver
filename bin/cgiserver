@@ -2,30 +2,47 @@
 
 USAGE='cgiserver [ -d | --dir ] [ -h | --help ]'
 
+read REQUEST_METHOD FILE_NAME http_version
 while [ $# -gt 0 ]
 do
 	case "$1" in
+		--check-static)
+			shift
+			if [ -f "$1$FILE_NAME" ]
+			then
+				read request_line
+				while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
+				do
+					read request_line
+				done
+				echo 'HTTP/1.1 200 OK'
+				echo -n 'ContentType: '
+				mimetype "$1$FILE_NAME"
+				echo ''
+				cat "$1$FILE_NAME"
+				exit 0
+			fi
+		;;
 		-d|--dir)
 			shift
 			DOCUMENT_ROOT="$1"
-			;;
+		;;
 		-h|--help)
 			echo "$USAGE"
 			exit 0
-			;;
+		;;
 		*)
 			echo "Invalid option: $1"
 			echo "$USAGE"
 			exit 1
-			;;
+		;;
 	esac
 	shift
 done
 
-read REQUEST_METHOD SCRIPT_NAME http_version
 read request_line
 while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
 do
 	read request_line
 done
-$DOCUMENT_ROOT$SCRIPT_NAME
+$DOCUMENT_ROOT$FILE_NAME
