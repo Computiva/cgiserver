@@ -1,4 +1,4 @@
-# CGIServer 1
+# CGIServer 2
 
 Serve CGI scripts.
 
