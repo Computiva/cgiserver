@@ -44,7 +44,7 @@ read request_line
 while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
 do
 	read request_line
-	[[ "$request_line" =~ ^Content-Length: ]] && CONTENT_LENGTH=`echo "$request_line" | cut -d: -f 2 | tr -d '\r\n '`
+	[[ "$request_line" =~ ^Content-Length: ]] && export CONTENT_LENGTH=`echo "$request_line" | cut -d: -f 2 | tr -d '\r\n '`
 done
-[ -v CONTENT_LENGTH ] && read -N $CONTENT_LENGTH request_content
+export GATEWAY_INTERFACE='CGI/1.1'
 $DOCUMENT_ROOT$FILE_NAME
