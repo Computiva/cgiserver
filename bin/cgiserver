@@ -48,4 +48,4 @@ do
 	[[ "$request_line" =~ ^Content-Length: ]] && export CONTENT_LENGTH=`echo "$request_line" | cut -d: -f 2 | tr -d '\r\n '`
 done
 export GATEWAY_INTERFACE='CGI/1.1'
-$DOCUMENT_ROOT$FILE_NAME
+[ -x "$DOCUMENT_ROOT$FILE_NAME" ] && "$DOCUMENT_ROOT$FILE_NAME"
