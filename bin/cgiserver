@@ -3,6 +3,7 @@
 USAGE='cgiserver [ -d | --dir ] [ -h | --help ]'
 
 read REQUEST_METHOD FILE_NAME http_version
+FILE_NAME=`readlink -m "$FILE_NAME"`
 while [ $# -gt 0 ]
 do
 	case "$1" in
