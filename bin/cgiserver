@@ -15,6 +15,10 @@ do
 			shift
 			scripts_dir="$1"
 		;;
+		--redirects)
+			shift
+			redirects_dir="$1"
+		;;
 		-h|--help)
 			echo "$USAGE"
 			exit 0
@@ -26,6 +30,11 @@ do
 		;;
 	esac
 	shift
+done
+
+for redirect_script in $redirects_dir/*
+do
+	file_name=`"$redirect_script" "$file_name"`
 done
 
 if [ -f "$static_dir$file_name" ]
