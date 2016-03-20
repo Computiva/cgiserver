@@ -2,31 +2,18 @@
 
 USAGE='cgiserver [ -d | --dir ] [ -h | --help ]'
 
-read REQUEST_METHOD FILE_NAME http_version
-FILE_NAME=`readlink -m "$FILE_NAME"`
+read REQUEST_METHOD file_name http_version
+file_name=`readlink -m "$file_name"`
 while [ $# -gt 0 ]
 do
 	case "$1" in
 		--check-static)
 			shift
-			if [ -f "$1$FILE_NAME" ]
-			then
-				read request_line
-				while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
-				do
-					read request_line
-				done
-				echo 'HTTP/1.1 200 OK'
-				echo -n 'Content-Type: '
-				mimetype "$1$FILE_NAME" | cut --delimiter : --fields 2
-				echo ''
-				cat "$1$FILE_NAME"
-				exit 0
-			fi
+			static_dir="$1"
 		;;
 		-d|--dir)
 			shift
-			DOCUMENT_ROOT="$1"
+			scripts_dir="$1"
 		;;
 		-h|--help)
 			echo "$USAGE"
@@ -41,6 +28,21 @@ do
 	shift
 done
 
+if [ -f "$static_dir$file_name" ]
+then
+	read request_line
+	while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
+	do
+		read request_line
+	done
+	echo 'HTTP/1.1 200 OK'
+	echo -n 'Content-Type: '
+	mimetype "$static_dir$file_name" | cut --delimiter : --fields 2
+	echo ''
+	cat "$static_dir$file_name"
+	exit 0
+fi
+
 read request_line
 while [ `echo -e "$request_line" | tr -d "\r\n" | wc -c` -gt 0 ]
 do
@@ -48,4 +50,4 @@ do
 	[[ "$request_line" =~ ^Content-Length: ]] && export CONTENT_LENGTH=`echo "$request_line" | cut -d: -f 2 | tr -d '\r\n '`
 done
 export GATEWAY_INTERFACE='CGI/1.1'
-[ -x "$DOCUMENT_ROOT$FILE_NAME" ] && "$DOCUMENT_ROOT$FILE_NAME"
+[ -x "$scripts_dir$file_name" ] && "$scripts_dir$file_name"
