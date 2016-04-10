@@ -2,7 +2,12 @@
 
 USAGE='cgiserver [ -d | --dir ] [ -h | --help ]'
 
-read REQUEST_METHOD file_name http_version
+read REQUEST_METHOD resource http_version
+IFS='?' resource=($resource)
+file_name="${resource[0]}"
+export QUERY_STRING="${resource[1]}"
+#read file_name QUERY_STRING <<< `echo "$resource" | sed -e 's/^\([^?]\+\)?\?\(.*\)$/\1 \2/'`
+#export QUERY_STRING="$QUERY_STRING"
 file_name=`readlink -m "$file_name"`
 while [ $# -gt 0 ]
 do
